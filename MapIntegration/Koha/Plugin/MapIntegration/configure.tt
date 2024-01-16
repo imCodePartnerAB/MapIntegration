@@ -1,0 +1,25 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: Plugin: Map integration</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Integrate map</div>
+
+<div id="doc3">
+    <h3>Configure parameters</h3>
+
+    <p>Enter base url of map.</p>
+
+    <form method="get">
+      <input type="hidden" name="class" value="[% CLASS %]"/>
+      <input type="hidden" name="method" value="[% METHOD %]"/>
+      <label for="host">Host</label>
+      <input type="text" name="host" value="[% path_host %]"/>
+      <input type="hidden" name="save" value="1" />
+      <p><input type="submit" value="Save configuration"/></p>
+    </form>
+
+[% INCLUDE 'intranet-bottom.inc' %]
