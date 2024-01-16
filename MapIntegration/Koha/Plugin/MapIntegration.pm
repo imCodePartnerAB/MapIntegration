@@ -12,7 +12,7 @@ use C4::Biblio qw(
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "0.1.3";
+our $VERSION = "1.0.0";
 
 our $metadata = {
     name            => 'Map Integration',
