@@ -7,18 +7,20 @@ use Koha::Biblios;
 use Koha::Items;
 use Koha::Item;
 
+use JSON;
+
 use C4::Biblio qw(
     GetBiblioData);
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "1.0.0";
+our $VERSION = "1.0.4";
 
 our $metadata = {
     name            => 'Map Integration',
-    author          => 'imCode.com',
+    author          => 'imCode.com.',
     date_authored   => '2023-12-01',
-    date_updated    => "2024-01-15",
+    date_updated    => "2025-01-15",
     minimum_version => '21.11.00.000',
     maximum_version => undef,
     version         => $VERSION,
@@ -84,6 +86,7 @@ sub opac_js {
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
     my $dat = &GetBiblioData($biblionumber);
+    my $dat_json = to_json($dat, { utf8 => 1, pretty => 0 }); 
 
     #inspired by opac-detail.pl
     my $shelflocations =
@@ -97,20 +100,37 @@ sub opac_js {
     $js .= "var prompt = \"" . $prompt . "\";";
     $js .= "var collections = {};";
     $js .= "var locations = {};";
+    $js .= "var dat_json = " . $dat_json . ";";
+    $js .= "var call_number = 'test' ;";
 
-      while (my $item = $items->next) {
+    while (my $item = $items->next) {
+
+        my $marc_record = $item->biblio->metadata->record;
+        my $call_number = "";
+        if ($marc_record) {
+            my $marc_as_string = $marc_record ? $marc_record->as_formatted() : "No MARC data";
+            my $marc_json = to_json($marc_as_string, { utf8 => 1 });
+            # $js .= "console.log('MARC:', " . $marc_json . ");";
         
-            if (defined $item->ccode && $item->ccode ne "") {
+            my $field_952 = $marc_record->field('952');
+            if ($field_952) {
+                $call_number = $field_952->subfield('o') || ""; 
+            } else {
+                $call_number = ""; 
+            }
+
+            $js .= "var call_number = \"" . $call_number . "\";";
+        }
+        
+        if (defined $item->ccode && $item->ccode ne "") {
             $js .= "collections[\"" . $collections->{$item->ccode} . "\"] = \"" . $item->ccode . "\";";  
-            } 
-            if (defined $item->location && $item->location ne "" ) {
+        } 
+        
+       if (defined $item->location && $item->location ne "" ) {
             $js .= "locations[\"" . $shelflocations->{$item->location} . "\"] = \"" . $item->location . "\";";  
         }     
-}
+    }       
         
-      
-
-
     $js .= <<'JS'; 
 
         $('#holdingst').find("tbody").find("tr").each(function(index) {
@@ -123,16 +143,18 @@ sub opac_js {
 
           var t = $(callNoTd).text();
 
-          var b = $.trim(t).split(' ');
+          var b = $.trim(t).split('(')[0];
 
-          var shelf = b[0];
-          
+          var shelf = b;
+                    
           var location = shelvingLocation in locations ? locations[shelvingLocation] : "";
           var ccode = collectionDesc in collections ? collections[collectionDesc] : "";
 
           var wagnerGuidePath = host + "?department=" + ccode + "&location=" + location + "&shelf=" + shelf;
 
           $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + prompt + "</a>");
+          // console.log("JSON DAT: " , dat_json);
+          // console.log("Call number: " , call_number);
           });
 
 JS
@@ -140,7 +162,7 @@ JS
     $js .= "</script>";
 
     return $js;
-
+    
     }
 }
 
