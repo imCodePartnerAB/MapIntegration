@@ -14,7 +14,7 @@ use C4::Biblio qw(
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "1.0.5";
+our $VERSION = "1.0.6";
 
 our $metadata = {
     name            => 'Map Integration',
@@ -86,7 +86,7 @@ sub opac_js {
     my $items = Koha::Items->search( { biblionumber => $biblionumber });
 
     my $dat = &GetBiblioData($biblionumber);
-    my $dat_json = to_json($dat, { utf8 => 1, pretty => 0 }); 
+    my $dat_json = to_json($dat, { utf8 => 0, pretty => 0 }); 
 
     #inspired by opac-detail.pl
     my $shelflocations =
