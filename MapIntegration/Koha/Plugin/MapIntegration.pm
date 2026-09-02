@@ -14,13 +14,13 @@ use C4::Biblio qw(
 
 use base qw(Koha::Plugins::Base);
 
-our $VERSION = "1.0.4";
+our $VERSION = "1.0.5";
 
 our $metadata = {
     name            => 'Map Integration',
     author          => 'imCode.com.',
     date_authored   => '2023-12-01',
-    date_updated    => "2025-01-15",
+    date_updated    => "2026-09-02",
     minimum_version => '21.11.00.000',
     maximum_version => undef,
     version         => $VERSION,
@@ -150,7 +150,7 @@ sub opac_js {
           var location = shelvingLocation in locations ? locations[shelvingLocation] : "";
           var ccode = collectionDesc in collections ? collections[collectionDesc] : "";
 
-          var wagnerGuidePath = host + "?department=" + ccode + "&location=" + location + "&shelf=" + shelf;
+          var wagnerGuidePath = host + "?department=" + ccode + "&location=" + location + "&shelf=" + shelf + "&text=" + encodeURIComponent(dat_json.title);
 
           $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + prompt + "</a>");
           // console.log("JSON DAT: " , dat_json);
