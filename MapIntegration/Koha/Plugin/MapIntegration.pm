@@ -50,7 +50,8 @@ sub configure {
 
         ## Grab value if exist
         $template->param(
-            path_host => $self->retrieve_data('path_host'),
+            path_host        => $self->retrieve_data('path_host'),
+            include_subtitle => $self->retrieve_data('include_subtitle'),
         );
 
         return $self->output_html( $template->output() );
@@ -58,7 +59,8 @@ sub configure {
     else {
         $self->store_data(
             {
-                path_host => $cgi->param('host')
+                path_host        => $cgi->param('host'),
+                include_subtitle => $cgi->param('include_subtitle') ? 1 : 0,
             }
         );
         $self->go_home();
@@ -96,8 +98,10 @@ sub opac_js {
 
     my $js = "<script> const item_paths = [];";
     my $host = $self->retrieve_data('path_host');
+    my $include_subtitle = $self->retrieve_data('include_subtitle') ? 'true' : 'false';
     $js .= "var host = \"" . $host . "\";";
     $js .= "var prompt = \"" . $prompt . "\";";
+    $js .= "var include_subtitle = " . $include_subtitle . ";";
     $js .= "var collections = {};";
     $js .= "var locations = {};";
     $js .= "var dat_json = " . $dat_json . ";";
@@ -150,7 +154,8 @@ sub opac_js {
           var location = shelvingLocation in locations ? locations[shelvingLocation] : "";
           var ccode = collectionDesc in collections ? collections[collectionDesc] : "";
 
-          var wagnerGuidePath = host + "?department=" + ccode + "&location=" + location + "&shelf=" + shelf + "&text=" + encodeURIComponent(dat_json.title);
+          var titleText = include_subtitle && dat_json.subtitle ? dat_json.title + " " + dat_json.subtitle : dat_json.title;
+          var wagnerGuidePath = host + "?department=" + ccode + "&location=" + location + "&shelf=" + shelf + "&text=" + encodeURIComponent(titleText);
 
           $(callNoTd).append("<a href=\"" + wagnerGuidePath + "\">" + prompt + "</a>");
           // console.log("JSON DAT: " , dat_json);

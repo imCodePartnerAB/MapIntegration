@@ -18,6 +18,11 @@
       <input type="hidden" name="method" value="[% METHOD %]"/>
       <label for="host">Host</label>
       <input type="text" name="host" value="[% path_host %]"/>
+      <br/><br/>
+      <label for="include_subtitle">
+        <input type="checkbox" name="include_subtitle" id="include_subtitle" value="1" [% IF include_subtitle %]checked[% END %]/>
+        Include subtitle (245$b) in map title
+      </label>
       <input type="hidden" name="save" value="1" />
       <p><input type="submit" value="Save configuration"/></p>
     </form>
